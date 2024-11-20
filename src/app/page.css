@@ -3,7 +3,7 @@
 }
 
 .visible {
-  display: block;
+  display: block!;
 }
 
 
@@ -35,6 +35,7 @@ header {
 }
 
 .popup {
+  display: none;
   position: fixed;
   z-index: 1000;
   top: 50%;

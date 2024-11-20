@@ -118,35 +118,53 @@ export default function Home() {
     return null; // Return null if the cookie isn't found
   }
 
-  const updateHeaderLocation = () => {
-    
-  }
+  const updateLocation = (locationId) => {
+    document.querySelectorAll('.location').forEach((div) => {
+      div.classList.remove('visible');
+    });
 
-  const windowOnLoad = async() => {
-    //getCookies
-    const location = getLocationCookie()
-    if(!location) {
-      //1. Get geolocation and set MB if in Manitoba
-      const ipResponse = await fetch('https://get.geojs.io/v1/ip/geo.json');
-      const data = await ipResponse.json();
-      if(data.region === 'Manitoba') {
-        document.cookie = `location=${'winnipeg'}`;
-      } else {
-        console.log("it's not winnipeg");
-        const popup = document.getElementById("location-popup")
-        console.log('popup', popup)
-        popup.classList.add('visible');
-        // div.classList.add('display-hidden');
-        // element.style.display = 'none'
-        // Is adding styles or adding classes faster?
-      }
+    const selectedDivs = document.querySelectorAll(`.location[data-location="${locationId}"]`);
+
+    if (selectedDivs) {
+      selectedDivs.forEach(div => {
+         div.classList.add('visible'); // Do something with each div
+      });
     }
   }
 
-  const handlePopupClick = (e) => {
-    console.log(e.target);
-    console.log(e.target.getAttribute('data-location'))
-    setPopupOpen(false)
+  const updateCookie = (dataLocationId) => {
+    document.cookie = `location=${dataLocationId}`
+  }
+
+  
+
+  const windowOnLoad = async() => {
+    //Get Cookies
+    const location = getLocationCookie()
+    if(!location) {
+      // Get geolocation and set MB if in Manitoba
+      const ipResponse = await fetch('https://get.geojs.io/v1/ip/geo.json');
+      const data = await ipResponse.json();
+      if(data.region === 'Manitoba') {
+        updateCookie('winnipeg')
+      } else {
+        // Show location popup if it's not Manitoba
+        const popup = document.getElementById("location-popup")
+        popup.style.display = 'block'
+        let elementsArray = document.querySelectorAll(".popup-item");
+        console.log('elementsArray', elementsArray)
+        elementsArray.forEach((elem) => {
+            elem.addEventListener('click',(ev) => {
+              const dataLocationId = elem.getAttribute('location-id')
+              updateCookie(dataLocationId);
+              updateLocation(dataLocationId);
+              popup.style.display = "none"
+            });
+        });
+      }
+    } else {
+      updateHeaderLocation(location)
+    }
   }
 
   return (
@@ -168,12 +186,14 @@ export default function Home() {
           })}</div>
         </header>
       </div>
-      <div id='location-popup' className='popup hide'>
+      <div id='location-popup' className={`popup`}>
         <div className='popup-inner'>
           {locations.map(location => 
-            <div key={`popup-${location.locationId}`} onClick={handlePopupClick} className='popup-item' data-location={location.locationId}>
-              <h3>{location.name}</h3>
-            </div>
+            <a location-id={location.locationId} key={`popup-${location.locationId}`} className='popup-item'>
+              <div>
+                <h3>{location.name}</h3>
+              </div>
+            </a>
           )}
         </div>
       </div>
