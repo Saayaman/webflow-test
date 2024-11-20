@@ -1,107 +1,10 @@
 "use client"
 import { useEffect, useState } from 'react';
 import './page.css'
+import locations from './cms/locations';
 
 export default function Home() {
   const [popupOpen, setPopupOpen] = useState(false)
-  const locations = [
-    {
-      name: "Winnipeg",
-      locationId: "winnipeg",
-      province: "MB",
-      address: "Unit 145, 815 Village Drive, Port Coquitlam, V3B 0G9",
-      email: "winnipeg@hiveclimbing.com",
-      phone: "(604) 461 0104",
-      monday: "12pm - 10pm",
-      tuesday: "12pm - 10pm",
-      wednesday: "12pm - 10pm",
-      thursday: "12pm - 10pm",
-      friday: "12pm - 10pm",
-      satday: "12pm - 10pm",
-      sunday: "12pm - 10pm",
-      headerUpdate: "Winnipeg will close at Dec 25th",
-    },
-    {
-      name: "Port Coquitlam",
-      locationId: "port-coquitlam",
-      province: "BC",
-      address: "Unit 145, 815 Village Drive, Port Coquitlam, V3B 0G9",
-      email: "poco@hiveclimbing.com",
-      phone: "(604) 461 0104",
-      monday: "12pm - 10pm",
-      tuesday: "12pm - 10pm",
-      wednesday: "12pm - 10pm",
-      thursday: "12pm - 10pm",
-      friday: "12pm - 10pm",
-      satday: "12pm - 10pm",
-      sunday: "12pm - 10pm",
-      headerUpdate: "PoCo will close at Dec 25th",
-    },
-    {
-      name: "North Shore",
-      locationId: "north-shore",
-      province: "BC",
-      address: "Unit 145, 815 Village Drive, Port Coquitlam, V3B 0G9",
-      email: "poco@hiveclimbing.com",
-      phone: "(604) 461 0104",
-      monday: "12pm - 10pm",
-      tuesday: "12pm - 10pm",
-      wednesday: "12pm - 10pm",
-      thursday: "12pm - 10pm",
-      friday: "12pm - 10pm",
-      satday: "12pm - 10pm",
-      sunday: "12pm - 10pm",
-      headerUpdate: "North Shore will close at Dec 25th",
-    },
-    {
-      name: "Surrey",
-      locationId: "surrey",
-      province: "BC",
-      address: "Unit 145, 815 Village Drive, Port Coquitlam, V3B 0G9",
-      email: "surrey@hiveclimbing.com",
-      phone: "(604) 461 0104",
-      monday: "12pm - 10pm",
-      tuesday: "12pm - 10pm",
-      wednesday: "12pm - 10pm",
-      thursday: "12pm - 10pm",
-      friday: "12pm - 10pm",
-      satday: "12pm - 10pm",
-      sunday: "12pm - 10pm",
-      headerUpdate: "Surrey will close at Dec 25th",
-    },
-    {
-      name: "Vancouver Boulder",
-      locationId: "vancouver-boulder",
-      province: "BC",
-      address: "Unit 145, 815 Village Drive, Port Coquitlam, V3B 0G9",
-      email: "poco@hiveclimbing.com",
-      phone: "(604) 461 0104",
-      monday: "12pm - 10pm",
-      tuesday: "12pm - 10pm",
-      wednesday: "12pm - 10pm",
-      thursday: "12pm - 10pm",
-      friday: "12pm - 10pm",
-      satday: "12pm - 10pm",
-      sunday: "12pm - 10pm",
-      headerUpdate: "Vancouver Boulder will close at Dec 25th",
-    },
-    {
-      name: "Vancouver Heights",
-      locationId: "vancouver-heights",
-      province: "BC",
-      address: "Unit 145, 815 Village Drive, Port Coquitlam, V3B 0G9",
-      email: "poco@hiveclimbing.com",
-      phone: "(604) 461 0104",
-      monday: "12pm - 10pm",
-      tuesday: "12pm - 10pm",
-      wednesday: "12pm - 10pm",
-      thursday: "12pm - 10pm",
-      friday: "12pm - 10pm",
-      satday: "12pm - 10pm",
-      sunday: "12pm - 10pm",
-      headerUpdate: "Vancouver Heights will close at Dec 25th",
-    }
-  ]
 
   useEffect(() => {
     windowOnLoad()
@@ -111,7 +14,7 @@ export default function Home() {
     const cookies = document.cookie.split('; '); // Split cookies by '; '
     for (let i = 0; i < cookies.length; i++) {
         const cookiePair = cookies[i].split('='); // Split each cookie into [key, value]
-        if (cookiePair[0] === location) {
+        if (cookiePair[0] === "location") {
             return decodeURIComponent(cookiePair[1]); // Return the value if the key matches
         }
     }
@@ -140,8 +43,10 @@ export default function Home() {
 
   const windowOnLoad = async() => {
     //Get Cookies
-    const location = getLocationCookie()
+    const location = await getLocationCookie()
+    console.log('location', location)
     if(!location) {
+      console.log("location doesn't exist")
       // Get geolocation and set MB if in Manitoba
       const ipResponse = await fetch('https://get.geojs.io/v1/ip/geo.json');
       const data = await ipResponse.json();
@@ -163,7 +68,7 @@ export default function Home() {
         });
       }
     } else {
-      updateHeaderLocation(location)
+      updateLocation(location)
     }
   }
 
